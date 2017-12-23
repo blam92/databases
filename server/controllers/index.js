@@ -1,4 +1,5 @@
 var models = require('../models');
+var url = require('url');
 
 var headers = {
   'access-control-allow-origin': '*',
@@ -15,17 +16,32 @@ module.exports = {
     	res.writeHead(statusCode, headers);  
 
     	models.messages.get().then((result) => {
-    		console.log('before sending response: ',result);
     		result = result.map((val) => {
-    			return {username: val.user,
-    							roomname: val.room,
+    			return {username: val.username,
+    							roomname: val.roomname,
     							text: val.message}
     		});
+        result.push({username: 'first', text:'first cached message', roomname:'lobby'});
     		res.end(JSON.stringify({results: result}));
     	});
     	
     }, // a function which handles a get request for all messages
-    post: function (req, res) {} // a function which handles posting a message to the database
+    post: function (req, res) {
+      var statusCode = 201;
+      res.writeHead(statusCode, headers);
+      messageObj = '';
+      req.on('data', (message) => {
+        let q = url.parse(req.url + '/?' + message.toString(), true);
+        messageObj = q.query;
+      });
+
+      req.on('end', () => {
+        models.messages.post(messageObj.text, messageObj.username, messageObj.roomname).then((result) => {
+          console.log('message has been stored in DB');
+          res.end('{}');
+        });
+      });
+    } // a function which handles posting a message to the database
   },
 
   users: {

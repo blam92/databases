@@ -29,6 +29,29 @@ describe('Persistent Node Chat Server', function() {
 
   it('Should insert posted messages to the DB', function(done) {
     // Post the user to the chat server.
+   //  const options = {  
+   //      url: 'http://127.0.0.1:3000/classes/users',
+   //      method: 'POST',
+   //      headers: {
+   //          'Accept': 'application/json',
+   //          'Accept-Charset': 'utf-8',
+   //          'User-Agent': 'my-reddit-client'
+   //      },
+   //      form: {
+   //        username: 'Valjean',
+   //        message: 'In mercy\'s name, three days is all I need.',
+   //        roomname: 'Hello'
+   //      }
+   //  };
+
+   // request(options, (err, response, body) => {
+   //    if(err) {
+   //      console.log(err);
+   //    } else {
+   //      console.log('IT WORKED!');
+   //    }
+   // });
+
     request({
       method: 'POST',
       uri: 'http://127.0.0.1:3000/classes/users',
@@ -67,9 +90,7 @@ describe('Persistent Node Chat Server', function() {
 
   it('Should output all messages from the DB', function(done) {
     // Let's insert a message into the db
-       var queryString = `SELECT users.name, messages.*, rooms.name FROM messages
-                            INNER JOIN users ON users.id = messages.user_id
-                            INNER JOIN rooms ON rooms.id = messages.room_id`;
+       var queryString = `SELECT username, roomname, message, created_at FROM messages`;
        var queryArgs = [];
     // TODO - The exact query string and query args to use
     // here depend on the schema you design, so I'll leave

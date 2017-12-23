@@ -3,9 +3,7 @@ var Promise = require('bluebird');
 module.exports = {
   messages: {
     get: function () {
-    	var q = `SELECT users.name AS user, messages.id, messages.message, messages.created_at, rooms.name AS room FROM messages
-                INNER JOIN users ON users.id = messages.user_id
-                INNER JOIN rooms ON rooms.id = messages.room_id`;
+    	var q = `SELECT username, roomname, message, created_at FROM messages`;
 
     	return new Promise((resolve, reject) => {
     		db.connection.query(q, (err, result) => {
@@ -20,10 +18,21 @@ module.exports = {
 
     }, // a function which produces all the messages
     post: function (message, user, room) {
-    	var qUser = `INSERT INTO messages (date, message, user_id, room_id)
-    								VALUES (CURDATE(), ${message}, 1, 1)`
+        console.log('message: ', message, 'user:', user, 'room:', room);
+    	var q = `INSERT INTO messages (username, roomname, message, created_at)
+    								VALUES ('${user}', '${room}', '${message}', CURDATE())`
+
+        return new Promise((resolve, reject) => {
+            db.connection.query(q, (err, result) => {
+                if(err) {
+                    console.log('error in post query', err);
+                    reject(err);
+                } else {
+                    resolve(result);
+                }
+            });
+        });
     }
-    //NOTE: NEED TO FIGURE OUT HOW TO GET IDS OF ROOM AND USER FOR POST.
   },
 
   users: {
