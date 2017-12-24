@@ -1,4 +1,4 @@
-var models = require('../models');
+var models = require('../models/orm-index');
 var url = require('url');
 
 var headers = {
@@ -15,7 +15,7 @@ module.exports = {
     	var statusCode = 200;
     	res.writeHead(statusCode, headers);  
 
-    	models.messages.get().then((result) => {
+    	models.get().then((result) => {
     		result = result.map((val) => {
     			return {username: val.username,
     							roomname: val.roomname,
@@ -36,7 +36,7 @@ module.exports = {
       });
 
       req.on('end', () => {
-        models.messages.post(messageObj.text, messageObj.username, messageObj.roomname).then((result) => {
+        models.post(messageObj.text, messageObj.username, messageObj.roomname).then((result) => {
           console.log('message has been stored in DB');
           res.end('{}');
         });
